@@ -3,14 +3,20 @@ package br.pro.celsofurtado.basicscodelab
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,7 +40,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun MyApp(modifier: Modifier = Modifier) {
 
-    var shouldShowOnBoarding by remember {
+    var shouldShowOnBoarding by rememberSaveable {
         mutableStateOf(true)
     }
 
@@ -51,22 +57,34 @@ private fun MyApp(modifier: Modifier = Modifier) {
 @Composable
 fun Greetings(
     modifier: Modifier = Modifier,
-    names: List<String> = listOf("World", "Compose", "Android", "Google")
+    names: List<String> = List(1000) {"$it"}
 ) {
-
-    Column(modifier = modifier.padding(vertical = 4.dp)) {
-        for (name in names) {
+    
+    LazyColumn(modifier = modifier.padding(vertical = 4.dp)) {
+        items(items = names) { name ->
             Greeting(name = name)
         }
     }
+
+//    Column(modifier = modifier.padding(vertical = 4.dp)) {
+//        for (name in names) {
+//            Greeting(name = name)
+//        }
+//    }
 
 }
 
 @Composable
 fun Greeting(name: String) {
 
-    val expanded = remember { mutableStateOf(false) }
-    val extraExpanding = if (expanded.value) 64.dp else 0.dp
+    val expanded = rememberSaveable { mutableStateOf(false) }
+
+    val extraExpanding by animateDpAsState(if (expanded.value) 100.dp else 0.dp,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
 
     Surface(
         color = MaterialTheme.colorScheme.primary,
@@ -79,7 +97,7 @@ fun Greeting(name: String) {
             Column(
                 modifier = Modifier
                     .weight(0.6f)
-                    .padding(bottom = extraExpanding)
+                    .padding(bottom = extraExpanding.coerceAtLeast(0.dp))
 
             ) {
                 Text(
