@@ -1,6 +1,8 @@
 package br.pro.celsofurtado.basicscodelab
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.Spring
@@ -25,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.pro.celsofurtado.basicscodelab.ui.theme.BasicsCodelabTheme
+import kotlin.coroutines.coroutineContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,9 +60,9 @@ private fun MyApp(modifier: Modifier = Modifier) {
 @Composable
 fun Greetings(
     modifier: Modifier = Modifier,
-    names: List<String> = List(1000) {"$it"}
+    names: List<String> = List(1000) { "$it" }
 ) {
-    
+
     LazyColumn(modifier = modifier.padding(vertical = 4.dp)) {
         items(items = names) { name ->
             Greeting(name = name)
@@ -79,7 +82,8 @@ fun Greeting(name: String) {
 
     val expanded = rememberSaveable { mutableStateOf(false) }
 
-    val extraExpanding by animateDpAsState(if (expanded.value) 100.dp else 0.dp,
+    val extraExpanding by animateDpAsState(
+        if (expanded.value) 100.dp else 0.dp,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow
@@ -108,8 +112,10 @@ fun Greeting(name: String) {
                 )
                 Text(
                     text = "$name!",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineMedium
+
+                    //fontSize = 20.sp,
+                    //fontWeight = FontWeight.Bold,
                     //color = Color.Yellow
                 )
             }
@@ -134,31 +140,40 @@ fun OnBoardingScreen(
     modifier: Modifier = Modifier
 ) {
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "Welcome to the Basics Codelab!")
-        Button(
-            modifier = Modifier.padding(vertical = 24.dp),
-            onClick = onContinueClicked
+    Surface() {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Continue",
-                color = Color.White
-            )
+            Text(text = "Welcome to the Basics Codelab!")
+            Button(
+                modifier = Modifier.padding(vertical = 24.dp),
+                onClick = onContinueClicked
+            ) {
+                Text(
+                    text = "Continue",
+                    color = Color.White
+                )
+            }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    widthDp = 400,
+    uiMode = UI_MODE_NIGHT_YES,
+    name = "Dark"
+)
+@Preview(
+    showBackground = true,
+    widthDp = 400
+)
 @Composable
 fun GreetingsPreview() {
     BasicsCodelabTheme {
-
         Greetings()
-
     }
 }
 
