@@ -10,9 +10,8 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -33,17 +32,31 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun MyApp(
+private fun MyApp(modifier: Modifier = Modifier) {
+
+    var shouldShowOnBoarding by remember {
+        mutableStateOf(true)
+    }
+
+    Surface(modifier) {
+        if (shouldShowOnBoarding) {
+            OnBoardingScreen(onContinueClicked = { shouldShowOnBoarding = false })
+        } else {
+            Greetings()
+        }
+    }
+
+}
+
+@Composable
+fun Greetings(
     modifier: Modifier = Modifier,
     names: List<String> = listOf("World", "Compose", "Android", "Google")
 ) {
-    Column(
-        modifier = modifier
-            .padding(vertical = 4.dp)
-            .fillMaxSize()
-    ) {
+
+    Column(modifier = modifier.padding(vertical = 4.dp)) {
         for (name in names) {
-            Greeting(name)
+            Greeting(name = name)
         }
     }
 
@@ -97,12 +110,54 @@ fun Greeting(name: String) {
     }
 }
 
+@Composable
+fun OnBoardingScreen(
+    onContinueClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Welcome to the Basics Codelab!")
+        Button(
+            modifier = Modifier.padding(vertical = 24.dp),
+            onClick = onContinueClicked
+        ) {
+            Text(
+                text = "Continue",
+                color = Color.White
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    BasicsCodelabTheme() {
+fun GreetingsPreview() {
+    BasicsCodelabTheme {
 
-        MyApp()
+        Greetings()
 
+    }
+}
+
+@Preview(showBackground = true, widthDp = 320, heightDp = 320)
+@Composable
+fun OnboardingPreview() {
+    BasicsCodelabTheme {
+
+        OnBoardingScreen(onContinueClicked = {})
+
+    }
+}
+
+@Preview
+@Composable
+fun MyAppPreview() {
+    BasicsCodelabTheme {
+        MyApp(Modifier.fillMaxSize())
     }
 }
